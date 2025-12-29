@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Button, Select, Upload, message, Row, Col } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import { Teacher } from '@common/types/database'
+import { Teacher, University } from '@common/types/database'
+import { DefaultOptionType } from 'antd/es/select'
 
 const { TextArea } = Input
-const { Option } = Select
 
 interface TeacherFormProps {
   initialValues?: Teacher
-  universities: any[]
+  universities: University[]
   onSubmit: (values: any) => Promise<void>
   onCancel: () => void
 }
@@ -23,11 +23,17 @@ export const TeacherForm: React.FC<TeacherFormProps> = ({
   const [loading, setLoading] = useState(false)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
 
+  const universityOptions: DefaultOptionType[] = universities.map<DefaultOptionType>((item) => ({
+    label: item.uni_title,
+    value: item.university_id
+  }))
+
   useEffect(() => {
     if (initialValues) {
       form.setFieldsValue({
+        university_id: initialValues.university_id,
         name: initialValues.name,
-        universityId: initialValues.university_id,
+        photo: initialValues.photo,
         info: initialValues.info
       })
     } else {
@@ -38,6 +44,7 @@ export const TeacherForm: React.FC<TeacherFormProps> = ({
   const handleSubmit = async (): Promise<void> => {
     try {
       const values = await form.validateFields()
+      console.log(values)
 
       // Convert photo to Buffer if file is selected
       if (photoFile) {
@@ -85,17 +92,11 @@ export const TeacherForm: React.FC<TeacherFormProps> = ({
 
         <Col span={12}>
           <Form.Item
-            name="universityId"
+            name="university_id"
             label="Университет"
             rules={[{ required: true, message: 'Выберите университет' }]}
           >
-            <Select placeholder="Выберите университет">
-              {universities.map((uni) => (
-                <Option key={uni.universityId} value={uni.universityId}>
-                  {uni.uniTitle}
-                </Option>
-              ))}
-            </Select>
+            <Select placeholder="Выберите университет" options={universityOptions} />
           </Form.Item>
         </Col>
       </Row>

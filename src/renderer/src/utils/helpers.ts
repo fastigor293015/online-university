@@ -75,7 +75,7 @@ export const isValidUrl = (url: string): boolean => {
 
 // Генерация уникального ID
 export const generateId = (): string => {
-  return Math.random().toString(36).substr(2, 9)
+  return Math.random().toString(36).slice(2, 10)
 }
 
 // Обработка ошибок

@@ -1,4 +1,18 @@
 export enum IpcChannels {
+  // Auth channels
+  REGISTER = 'user:register',
+  LOGIN = 'user:login',
+
+  BACKUP = 'database:backup',
+  CHECK_PSQL_TOOL = 'database:checkPostgreSQLTools',
+  GET_DB_INFO = 'database:getDatabaseInfo',
+
+  START_PG_MONITORING = 'database:startPgMonitoring',
+  PG_METRICS_UPDATE = 'database:pgMetricsUpdate',
+  METRICS_UPDATED = 'database:metricsUpdated',
+  STOP_PG_MONITORING = 'database:stopPgMonitoring',
+  GET_PG_METRICS = 'database:get-pg-metrics',
+
   // Course channels
   COURSE_FIND_ALL = 'course:findAll',
   COURSE_FIND_BY_ID = 'course:findById',

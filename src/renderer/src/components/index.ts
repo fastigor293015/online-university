@@ -1,2 +1,7 @@
 export { TeacherForm } from './teacher/TeacherForm'
 export { TeacherTable } from './teacher/TeacherTable'
+export { StudentForm } from './student/StudentForm'
+export { StudentTable } from './student/StudentTable'
+export { LoginForm } from './auth/LoginForm'
+export { RegisterForm } from './auth/RegisterForm'
+export { PrivateRoute } from './auth/PrivateRoute'

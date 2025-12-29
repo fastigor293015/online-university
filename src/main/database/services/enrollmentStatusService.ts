@@ -6,15 +6,15 @@ interface UpdateEnrollmentStatusDto extends Omit<Partial<IEnrollmentStatus>, 'st
 
 export class EnrollmentStatusService {
   static async findAll(): Promise<IEnrollmentStatus[]> {
-    return EnrollmentStatus.findAll()
+    return EnrollmentStatus.findAll({ raw: true })
   }
 
   static async findById(id: number): Promise<IEnrollmentStatus | null> {
-    return EnrollmentStatus.findByPk(id)
+    return EnrollmentStatus.findByPk(id, { raw: true })
   }
 
   static async create(data: CreateEnrollmentStatusDto): Promise<IEnrollmentStatus> {
-    return EnrollmentStatus.create(data)
+    return EnrollmentStatus.create(data, { raw: true })
   }
 
   static async update(
@@ -35,12 +35,14 @@ export class EnrollmentStatusService {
 
   static async findByName(statusName: string): Promise<IEnrollmentStatus | null> {
     return EnrollmentStatus.findOne({
+      raw: true,
       where: { status_name: statusName }
     })
   }
 
   static async getDefaultStatus(): Promise<IEnrollmentStatus | null> {
     return EnrollmentStatus.findOne({
+      raw: true,
       where: { status_id: 1 }
     })
   }

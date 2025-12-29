@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { Table, Button, Space, Modal, message, Tag, Image } from 'antd'
 import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined } from '@ant-design/icons'
-import { Teacher } from '@common/types/database'
-import { TeacherForm } from '@renderer/components/teacher/TeacherForm'
+import { Teacher, University } from '@common/types/database'
+import { TeacherForm } from './TeacherForm'
+import { ColumnsType } from 'antd/es/table'
+import { generateId } from '@renderer/utils/helpers'
 
 export const TeacherTable: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([])
-  const [universities, setUniversities] = useState<any[]>([])
+  const [universities, setUniversities] = useState<University[]>([])
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null)
   const [photoPreviewVisible, setPhotoPreviewVisible] = useState(false)
   const [currentPhoto, setCurrentPhoto] = useState<string>('')
 
-  const loadData = async () => {
+  const loadData = async (): Promise<void> => {
     setLoading(true)
     try {
       const [teachersData, universitiesData] = await Promise.all([
-        TeacherService.getAll(),
-        UniversityService.getAll()
+        window.electronAPI.teacher.findAll(),
+        window.electronAPI.university.findAll()
       ])
       setTeachers(teachersData)
       setUniversities(universitiesData)
@@ -30,60 +32,42 @@ export const TeacherTable: React.FC = () => {
   }
 
   useEffect(() => {
+    console.log(teachers)
+  }, [teachers])
+
+  useEffect(() => {
     loadData()
   }, [])
 
-  const columns = [
+  const columns: ColumnsType<Teacher> = [
     {
-      title: 'Фото',
-      dataIndex: 'photo',
-      key: 'photo',
-      width: 80,
-      render: (photo: Buffer) =>
-        photo ? (
-          <>
-            <Image
-              width={50}
-              height={50}
-              src={`data:image/jpeg;base64,${Buffer.from(photo).toString('base64')}`}
-              preview={{
-                visible: photoPreviewVisible,
-                src: `data:image/jpeg;base64,${Buffer.from(photo).toString('base64')}`,
-                onVisibleChange: (visible) => setPhotoPreviewVisible(visible)
-              }}
-              onClick={() => {
-                setCurrentPhoto(`data:image/jpeg;base64,${Buffer.from(photo).toString('base64')}`)
-                setPhotoPreviewVisible(true)
-              }}
-              style={{ cursor: 'pointer', borderRadius: '4px' }}
-            />
-          </>
-        ) : (
-          <div style={{ width: 50, height: 50, background: '#f0f0f0', borderRadius: '4px' }} />
-        )
+      title: 'teacher_id',
+      dataIndex: 'teacher_id',
+      key: 'column_teacher_id',
+      sorter: (a: Teacher, b: Teacher) => a.teacher_id - b.teacher_id
     },
     {
-      title: 'Имя',
+      title: 'name',
       dataIndex: 'name',
-      key: 'name',
+      key: 'column_name',
       sorter: (a: Teacher, b: Teacher) => a.name.localeCompare(b.name)
     },
     {
-      title: 'Университет',
-      key: 'university',
-      render: (_: any, record: Teacher) =>
-        record.university ? <Tag color="blue">{record.university.uniTitle}</Tag> : '-'
+      title: 'photo',
+      dataIndex: 'photo',
+      key: 'column_photo'
     },
     {
-      title: 'Информация',
+      title: 'info',
       dataIndex: 'info',
-      key: 'info',
+      key: 'column_info',
       ellipsis: true
     },
     {
-      title: 'Количество курсов',
-      key: 'courseCount',
-      render: (_: any, record: Teacher) => record.courses?.length || 0
+      title: 'university_id',
+      dataIndex: 'university_id',
+      key: 'column_university_id',
+      sorter: (a: Teacher, b: Teacher) => a.university_id - b.university_id
     },
     {
       title: 'Действия',
@@ -95,7 +79,7 @@ export const TeacherTable: React.FC = () => {
           <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} size="small" />
           <Button
             icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.teacherId)}
+            onClick={() => handleDelete(record.teacher_id)}
             danger
             size="small"
           />
@@ -104,23 +88,16 @@ export const TeacherTable: React.FC = () => {
     }
   ]
 
-  const handleView = (teacher: Teacher) => {
+  const handleView = (teacher: Teacher): void => {
     Modal.info({
       title: teacher.name,
       content: (
         <div>
-          {teacher.university && (
-            <p>
-              <strong>Университет:</strong> {teacher.university.uniTitle}
-            </p>
-          )}
-          {teacher.info && (
-            <p>
-              <strong>Информация:</strong> {teacher.info}
-            </p>
-          )}
           <p>
-            <strong>Количество курсов:</strong> {teacher.courses?.length || 0}
+            <strong>Фото:</strong> {teacher.name}
+          </p>
+          <p>
+            <strong>Описание:</strong> {teacher.info}
           </p>
         </div>
       ),
@@ -128,18 +105,18 @@ export const TeacherTable: React.FC = () => {
     })
   }
 
-  const handleEdit = (teacher: Teacher) => {
+  const handleEdit = (teacher: Teacher): void => {
     setSelectedTeacher(teacher)
     setModalVisible(true)
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number): Promise<void> => {
     Modal.confirm({
       title: 'Удалить преподавателя?',
       content: 'Все связанные курсы также будут удалены',
       onOk: async () => {
         try {
-          await TeacherService.delete(id)
+          await window.electronAPI.teacher.delete(id)
           message.success('Преподаватель удален')
           loadData()
         } catch (error) {
@@ -149,13 +126,15 @@ export const TeacherTable: React.FC = () => {
     })
   }
 
-  const handleFormSubmit = async (values: any) => {
+  const handleFormSubmit = async (values: any): Promise<void> => {
     try {
       if (selectedTeacher) {
-        await TeacherService.update(selectedTeacher.teacherId, values)
+        await window.electronAPI.teacher
+          .update(selectedTeacher.teacher_id, values)
+          .then((res) => console.log(res))
         message.success('Преподаватель обновлен')
       } else {
-        await TeacherService.create(values)
+        await window.electronAPI.teacher.create(values).then((res) => console.log(res))
         message.success('Преподаватель создан')
       }
       setModalVisible(false)
@@ -177,14 +156,14 @@ export const TeacherTable: React.FC = () => {
             setModalVisible(true)
           }}
         >
-          Добавить преподавателя
+          Добавить запись
         </Button>
       </div>
 
       <Table
         dataSource={teachers}
         columns={columns}
-        rowKey="teacherId"
+        rowKey={(record) => `${record.teacher_id || 'temp'}_${generateId()}`}
         loading={loading}
         pagination={{ pageSize: 10 }}
       />

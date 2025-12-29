@@ -7,11 +7,67 @@ import {
   TeacherService,
   StudentService,
   CourseService,
-  EnrollmentService
+  EnrollmentService,
+  BackupService,
+  UserService
 } from '../database/services'
 import { IpcChannels } from '@common/ipc/types'
+import {} from '@main/database/services/userService'
+import { AuthData } from '@common/types/database'
+import { PostgresMonitorService } from '@main/database/services/PgMonitorService'
 
 export function registerIpcHandlers(): void {
+  // Инициализация сервиса (конфигурацию лучше брать из файла или переменных окружения)
+  const monitor = new PostgresMonitorService({
+    host: 'localhost',
+    port: 5432,
+    database: 'online_university',
+    user: 'postgres',
+    password: 'Rq489qq2cxc@'
+    // ssl: false,
+    // // Дополнительные параметры
+    // max: 20, // максимальное количество клиентов в пуле
+    // idleTimeoutMillis: 30000, // время простоя перед закрытием соединения
+    // connectionTimeoutMillis: 2000 // таймаут подключения
+  })
+
+  // Обработчик запроса на старт мониторинга
+  ipcMain.handle(IpcChannels.START_PG_MONITORING, (event, interval) => {
+    monitor.startMonitoring(interval)
+    // Подписываем окно на обновления
+    monitor.on(IpcChannels.METRICS_UPDATED, (metrics) => {
+      event.sender.send(IpcChannels.PG_METRICS_UPDATE, metrics)
+    })
+    return { success: true }
+  })
+
+  // Обработчик запроса на остановку
+  ipcMain.handle(IpcChannels.STOP_PG_MONITORING, () => {
+    monitor.stopMonitoring()
+    return { success: true }
+  })
+
+  // Запрос последних известных метрик
+  ipcMain.handle('get-pg-metrics', () => monitor.getLastMetrics())
+  // Auth handlers
+  ipcMain.handle(IpcChannels.REGISTER, async (_, data: AuthData) => {
+    return await UserService.register(data)
+  })
+
+  ipcMain.handle(IpcChannels.LOGIN, async (_, data: AuthData) => {
+    return await UserService.login(data)
+  })
+
+  ipcMain.handle(IpcChannels.BACKUP, async () => {
+    return await BackupService.quickBackup()
+  })
+  ipcMain.handle(IpcChannels.CHECK_PSQL_TOOL, async () => {
+    return await BackupService.checkPostgreSQLTools()
+  })
+  ipcMain.handle(IpcChannels.GET_DB_INFO, async () => {
+    return await BackupService.getDatabaseInfo()
+  })
+
   // Student handlers
   ipcMain.handle(IpcChannels.STUDENT_FIND_ALL, async () => {
     return await StudentService.findAll()
@@ -59,7 +115,7 @@ export function registerIpcHandlers(): void {
     return await TeacherService.findAll()
   })
 
-  ipcMain.handle(IpcChannels.TEACHER_FIND_ALL, async (_, id: number) => {
+  ipcMain.handle(IpcChannels.TEACHER_FIND_BY_ID, async (_, id: number) => {
     return await TeacherService.findById(id)
   })
 

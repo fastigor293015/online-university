@@ -22,7 +22,7 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve(__dirname, './src/renderer'),
+        '@renderer': resolve(__dirname, './src/renderer/src'),
         '@common': resolve(__dirname, './src/common')
       }
     },
@@ -31,6 +31,14 @@ export default defineConfig({
       preprocessorOptions: {
         less: {
           javascriptEnabled: true
+        }
+      }
+    },
+    build: {
+      rollupOptions: {
+        external: ['electron', '@main/*', '@preload/*'], // Запрещаем импорт из других процессов
+        input: {
+          main: resolve('src/renderer/index.html')
         }
       }
     }

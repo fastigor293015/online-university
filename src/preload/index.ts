@@ -1,16 +1,43 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { IpcChannels } from '@common/ipc/types'
 import {
+  AuthData,
+  AuthResponse,
+  BackupObject,
   Course,
   CourseCategory,
+  DBInfo,
   Enrollment,
+  PGMetrics,
+  PostgreSQLTools,
   Student,
   Teacher,
   University
 } from '@common/types/database'
 
 // Типизированный API для renderer процесса
-const electronAPI = {
+export const electronAPI = {
+  // User API
+  user: {
+    register: (data: AuthData): Promise<AuthResponse> =>
+      ipcRenderer.invoke(IpcChannels.REGISTER, data),
+    login: (data: AuthData): Promise<AuthResponse> => ipcRenderer.invoke(IpcChannels.LOGIN, data)
+  },
+
+  database: {
+    backup: (): Promise<BackupObject> => ipcRenderer.invoke(IpcChannels.BACKUP),
+    checkPostgreSQLTools: (): Promise<PostgreSQLTools> =>
+      ipcRenderer.invoke(IpcChannels.CHECK_PSQL_TOOL),
+    getDatabaseInfo: (): Promise<DBInfo> => ipcRenderer.invoke(IpcChannels.GET_DB_INFO),
+
+    // Мониторинг сервера БД
+    startPgMonitoring: (interval: number): Promise<AuthResponse> =>
+      ipcRenderer.invoke(IpcChannels.START_PG_MONITORING, interval),
+    onPgMetricsUpdate: (callback: (newMetrics: PGMetrics) => void) => () =>
+      ipcRenderer.invoke(IpcChannels.PG_METRICS_UPDATE, callback),
+    stopPgMonitoring: () => ipcRenderer.invoke(IpcChannels.STOP_PG_MONITORING)
+  },
+
   // Course API
   course: {
     findAll: () => ipcRenderer.invoke(IpcChannels.COURSE_FIND_ALL),

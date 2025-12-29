@@ -17,11 +17,12 @@ interface UpdateEnrollmentDto extends Pick<
 
 export class EnrollmentService {
   static async findAll(): Promise<IEnrollment[]> {
-    return Enrollment.findAll()
+    return Enrollment.findAll({ raw: true })
   }
 
   static async findOne(studentId: number, courseId: number): Promise<IEnrollment | null> {
     return Enrollment.findOne({
+      raw: true,
       where: { student_id: studentId, course_id: courseId },
       include: [
         {
@@ -41,10 +42,13 @@ export class EnrollmentService {
   }
 
   static async create(data: CreateEnrollmentDto): Promise<IEnrollment> {
-    return Enrollment.create({
-      ...data,
-      status_id: data.status_id || 1 // Default status
-    })
+    return Enrollment.create(
+      {
+        ...data,
+        status_id: data.status_id || 1 // Default status
+      },
+      { raw: true }
+    )
   }
 
   static async update(
@@ -111,6 +115,7 @@ export class EnrollmentService {
 
   static async getStudentEnrollments(studentId: number): Promise<IEnrollment[]> {
     return Enrollment.findAll({
+      raw: true,
       where: { student_id: studentId },
       include: [
         {
@@ -138,6 +143,7 @@ export class EnrollmentService {
 
   static async getCourseEnrollments(courseId: number): Promise<IEnrollment[]> {
     return Enrollment.findAll({
+      raw: true,
       where: { course_id: courseId },
       include: [
         {

@@ -1,3 +1,5 @@
+export { UserService } from './userService'
+export { BackupService } from './backupService'
 export { CourseService } from './courseService'
 export { EnrollmentService } from './enrollmentService'
 export { StudentService } from './studentService'

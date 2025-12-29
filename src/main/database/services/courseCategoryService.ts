@@ -7,15 +7,15 @@ interface UpdateCourseCategoryDto extends Omit<Partial<ICourseCategory>, 'catego
 
 export class CourseCategoryService {
   static async findAll(): Promise<ICourseCategory[]> {
-    return CourseCategory.findAll()
+    return CourseCategory.findAll({ raw: true })
   }
 
   static async findById(id: number): Promise<ICourseCategory | null> {
-    return CourseCategory.findByPk(id)
+    return CourseCategory.findByPk(id, { raw: true })
   }
 
   static async create(data: CreateCourseCategoryDto): Promise<ICourseCategory> {
-    return CourseCategory.create(data)
+    return CourseCategory.create(data, { raw: true })
   }
 
   static async update(
@@ -36,6 +36,7 @@ export class CourseCategoryService {
 
   static async findByName(categoryName: string): Promise<ICourseCategory | null> {
     return CourseCategory.findOne({
+      raw: true,
       where: { category_name: categoryName }
     })
   }

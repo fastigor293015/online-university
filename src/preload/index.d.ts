@@ -1,4 +1,4 @@
-import { electronAPI } from './index'
+import { electronAPI } from './'
 
 declare global {
   interface Window {

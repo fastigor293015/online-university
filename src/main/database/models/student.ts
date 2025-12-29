@@ -17,6 +17,7 @@ export class Student extends Model<InferAttributes<Student>, InferCreationAttrib
   declare resume: string
   declare email: string
   declare resume_allowed: boolean
+  declare encrypted_student_info: string
 }
 
 Student.init(
@@ -56,6 +57,9 @@ Student.init(
     resume_allowed: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    encrypted_student_info: {
+      type: DataTypes.TEXT
     }
   },
   {

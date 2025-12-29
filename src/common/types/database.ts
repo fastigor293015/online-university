@@ -1,3 +1,62 @@
+export interface PGMetrics {
+  status: 'healthy' | 'error'
+  active_connections?: number
+  waiting_connections?: number
+  blocked_transactions?: number
+  xact_commit?: number
+  xact_rollback?: number
+  cache_hit_ratio?: number
+  db_size?: string
+  table_count?: number
+  timestamp?: Date
+  error?: string
+}
+
+export interface PostgreSQLTools {
+  pg_dump: boolean
+  pg_restore: boolean
+  psql: boolean
+}
+
+export interface BackupObject {
+  success: boolean
+  filePath?: string
+  error?: string
+}
+
+export interface DBInfo {
+  name: string
+  size: string
+  tablesCount: number
+  totalRows: number
+  lastBackup?: string
+}
+
+export interface User {
+  user_id: number
+  username: string
+  password_hash: string
+  role: string
+  created_at: Date
+  last_login?: Date
+}
+
+export interface AuthData {
+  username: string
+  password: string
+}
+
+export type AuthResponse =
+  | {
+      success: true
+      message: string
+      user: User
+    }
+  | {
+      success: false
+      message: string
+    }
+
 export interface Course {
   course_id: number
   teacher_id: number
@@ -30,6 +89,7 @@ export interface Student {
   resume: string
   email: string
   resume_allowed: boolean
+  encrypted_student_info?: string
 }
 
 export interface Teacher {

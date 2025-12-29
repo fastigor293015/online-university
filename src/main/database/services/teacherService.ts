@@ -6,11 +6,12 @@ interface UpdateTeacherDto extends Omit<Partial<ITeacher>, 'teacher_id'> {}
 
 export class TeacherService {
   static async findAll(): Promise<ITeacher[]> {
-    return Teacher.findAll()
+    return Teacher.findAll({ raw: true })
   }
 
   static async findById(id: number): Promise<ITeacher | null> {
     return Teacher.findByPk(id, {
+      raw: true,
       include: [
         {
           model: University,
@@ -21,7 +22,7 @@ export class TeacherService {
   }
 
   static async create(data: CreateTeacherDto): Promise<ITeacher> {
-    return Teacher.create(data)
+    return Teacher.create(data, { raw: true })
   }
 
   static async update(id: number, data: UpdateTeacherDto): Promise<[number, ITeacher[]]> {
@@ -39,6 +40,7 @@ export class TeacherService {
 
   static async findByUniversity(universityId: number): Promise<ITeacher[]> {
     return Teacher.findAll({
+      raw: true,
       where: { university_id: universityId },
       include: [
         {

@@ -6,21 +6,22 @@ interface UpdateStudentDto extends Omit<Partial<IStudent>, 'student_id'> {}
 
 export class StudentService {
   static async findAll(): Promise<IStudent[]> {
-    return Student.findAll()
+    return Student.findAll({ raw: true })
   }
 
   static async findById(id: number): Promise<IStudent | null> {
-    return Student.findByPk(id)
+    return Student.findByPk(id, { raw: true })
   }
 
   static async findByEmail(email: string): Promise<IStudent | null> {
     return Student.findOne({
+      raw: true,
       where: { email }
     })
   }
 
   static async create(data: CreateStudentDto): Promise<IStudent> {
-    return Student.create(data)
+    return Student.create(data, { raw: true })
   }
 
   static async update(id: number, data: UpdateStudentDto): Promise<[number, IStudent[]]> {
@@ -38,6 +39,7 @@ export class StudentService {
 
   static async getStudentCourses(studentId: number): Promise<ICourse[]> {
     const student = await Student.findByPk(studentId, {
+      raw: true,
       include: [
         {
           model: Course,

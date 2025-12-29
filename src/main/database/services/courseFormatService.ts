@@ -7,15 +7,15 @@ interface UpdateCourseFormatDto extends Omit<Partial<ICourseFormat>, 'format_id'
 
 export class CourseFormatService {
   static async findAll(): Promise<ICourseFormat[]> {
-    return CourseFormat.findAll()
+    return CourseFormat.findAll({ raw: true })
   }
 
   static async findById(id: number): Promise<ICourseFormat | null> {
-    return CourseFormat.findByPk(id)
+    return CourseFormat.findByPk(id, { raw: true })
   }
 
   static async create(data: CreateCourseFormatDto): Promise<ICourseFormat> {
-    return CourseFormat.create(data)
+    return CourseFormat.create(data, { raw: true })
   }
 
   static async update(id: number, data: UpdateCourseFormatDto): Promise<[number, ICourseFormat[]]> {
@@ -33,6 +33,7 @@ export class CourseFormatService {
 
   static async findByName(formatName: string): Promise<ICourseFormat | null> {
     return CourseFormat.findOne({
+      raw: true,
       where: { format_name: formatName }
     })
   }

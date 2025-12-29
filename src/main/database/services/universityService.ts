@@ -6,15 +6,15 @@ interface UpdateUniversityDto extends Omit<Partial<IUniversity>, 'university_id'
 
 export class UniversityService {
   static async findAll(): Promise<IUniversity[]> {
-    return University.findAll()
+    return University.findAll({ raw: true })
   }
 
   static async findById(id: number): Promise<IUniversity | null> {
-    return University.findByPk(id)
+    return University.findByPk(id, { raw: true })
   }
 
   static async create(data: CreateUniversityDto): Promise<IUniversity> {
-    return University.create(data)
+    return University.create(data, { raw: true })
   }
 
   static async update(id: number, data: UpdateUniversityDto): Promise<[number, IUniversity[]]> {

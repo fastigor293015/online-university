@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Card, Statistic, Typography, Spin, Alert } from 'antd'
 import { BankOutlined, TeamOutlined, UserOutlined, BookOutlined } from '@ant-design/icons'
-import {
-  CourseService,
-  StudentService,
-  TeacherService,
-  UniversityService
-} from '@renderer/services'
+import { DatabaseActions } from '@renderer/components/shared/DatabaseActions'
 
 const { Title } = Typography
 
@@ -24,10 +19,10 @@ export const DashboardPage: React.FC = () => {
     try {
       setLoading(true)
       const [universities, teachers, students, courses] = await Promise.all([
-        UniversityService.getAll(),
-        TeacherService.getAll(),
-        StudentService.getAll(),
-        CourseService.getAll()
+        window.electronAPI.university.findAll(),
+        window.electronAPI.teacher.findAll(),
+        window.electronAPI.student.findAll(),
+        window.electronAPI.course.findAll()
       ])
 
       setStats({
@@ -75,7 +70,7 @@ export const DashboardPage: React.FC = () => {
               title="Университеты"
               value={stats.universities}
               prefix={<BankOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              style={{ color: '#1890ff' }}
             />
           </Card>
         </Col>
@@ -85,7 +80,7 @@ export const DashboardPage: React.FC = () => {
               title="Преподаватели"
               value={stats.teachers}
               prefix={<TeamOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              style={{ color: '#52c41a' }}
             />
           </Card>
         </Col>
@@ -95,7 +90,7 @@ export const DashboardPage: React.FC = () => {
               title="Студенты"
               value={stats.students}
               prefix={<UserOutlined />}
-              valueStyle={{ color: '#722ed1' }}
+              style={{ color: '#722ed1' }}
             />
           </Card>
         </Col>
@@ -105,7 +100,7 @@ export const DashboardPage: React.FC = () => {
               title="Курсы"
               value={stats.courses}
               prefix={<BookOutlined />}
-              valueStyle={{ color: '#fa8c16' }}
+              style={{ color: '#fa8c16' }}
             />
           </Card>
         </Col>
@@ -114,7 +109,8 @@ export const DashboardPage: React.FC = () => {
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col span={24}>
           <Card title="Быстрые действия">
-            <Row gutter={[8, 8]}>
+            <DatabaseActions />
+            {/* <Row gutter={[8, 8]}>
               <Col>
                 <a href="/universities">Перейти к университетам</a>
               </Col>
@@ -127,7 +123,7 @@ export const DashboardPage: React.FC = () => {
               <Col>
                 <a href="/courses">Перейти к курсам</a>
               </Col>
-            </Row>
+            </Row> */}
           </Card>
         </Col>
       </Row>

@@ -17,11 +17,12 @@ interface UpdateCourseDto extends Omit<Partial<ICourse>, 'course_id'> {}
 
 export class CourseService {
   static async findAll(): Promise<ICourse[]> {
-    return Course.findAll()
+    return Course.findAll({ raw: true })
   }
 
   static async findById(id: number): Promise<ICourse | null> {
     return Course.findByPk(id, {
+      raw: true,
       include: [
         {
           model: Teacher,
@@ -50,7 +51,7 @@ export class CourseService {
   }
 
   static async create(data: CreateCourseDto): Promise<ICourse> {
-    return Course.create(data)
+    return Course.create(data, { raw: true })
   }
 
   static async update(id: number, data: UpdateCourseDto): Promise<[number, ICourse[]]> {
@@ -70,6 +71,7 @@ export class CourseService {
     const currentDate = new Date()
 
     return Course.findAll({
+      raw: true,
       where: {
         start_date: { [Op.gte]: currentDate }
       },
@@ -89,6 +91,7 @@ export class CourseService {
 
   static async getCourseStudents(courseId: number): Promise<IStudent[]> {
     const course = await Course.findByPk(courseId, {
+      raw: true,
       include: [
         {
           model: Student,
