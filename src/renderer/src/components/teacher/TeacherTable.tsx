@@ -5,8 +5,11 @@ import { Teacher, University } from '@common/types/database'
 import { TeacherForm } from './TeacherForm'
 import { ColumnsType } from 'antd/es/table'
 import { generateId } from '@renderer/utils/helpers'
+import { useUserStore } from '@renderer/stores/useUserStore'
+import { RecordActions } from '@renderer/components/shared/RecordActions'
 
 export const TeacherTable: React.FC = () => {
+  const { isAdmin } = useUserStore()
   const [teachers, setTeachers] = useState<Teacher[]>([])
   const [universities, setUniversities] = useState<University[]>([])
   const [loading, setLoading] = useState(false)
@@ -74,16 +77,11 @@ export const TeacherTable: React.FC = () => {
       key: 'actions',
       width: 120,
       render: (_: any, record: Teacher) => (
-        <Space>
-          <Button icon={<EyeOutlined />} onClick={() => handleView(record)} size="small" />
-          <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} size="small" />
-          <Button
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.teacher_id)}
-            danger
-            size="small"
-          />
-        </Space>
+        <RecordActions
+          onView={() => handleView(record)}
+          onEdit={() => handleEdit(record)}
+          onDelete={() => handleDelete(record.teacher_id)}
+        />
       )
     }
   ]
@@ -147,18 +145,20 @@ export const TeacherTable: React.FC = () => {
 
   return (
     <>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            setSelectedTeacher(null)
-            setModalVisible(true)
-          }}
-        >
-          Добавить запись
-        </Button>
-      </div>
+      {isAdmin && (
+        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setSelectedTeacher(null)
+              setModalVisible(true)
+            }}
+          >
+            Добавить запись
+          </Button>
+        </div>
+      )}
 
       <Table
         dataSource={teachers}

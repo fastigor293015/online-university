@@ -20,7 +20,7 @@ async function createMainWindow(): Promise<void> {
     height: 900,
     minWidth: 1024,
     minHeight: 768,
-    show: false,
+    show: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       nodeIntegration: false,

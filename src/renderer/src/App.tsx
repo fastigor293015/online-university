@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom'
 import { Layout, Menu } from 'antd'
 import {
@@ -18,6 +18,7 @@ import { LoginPage } from '@renderer/pages/login/LoginPage'
 import { UserMenu } from '@renderer/components/auth/UserMenu'
 import { StudentsPage } from '@renderer/pages/students/StudentsPage'
 import { PgMonitorPage } from '@renderer/pages/monitoring/PgMonitorPage'
+import { CoursesPage } from '@renderer/pages/courses/CoursesPage'
 
 const { Header, Sider, Content } = Layout
 
@@ -103,7 +104,7 @@ const App: React.FC = () => {
               <Route path="/universities" element={<TeachersPage />} />
               <Route path="/teachers" element={<TeachersPage />} />
               <Route path="/students" element={<StudentsPage />} />
-              <Route path="/courses" element={<TeachersPage />} />
+              <Route path="/courses" element={<CoursesPage />} />
               <Route path="/enrollments" element={<TeachersPage />} />
               <Route path="/monitoring" element={<PgMonitorPage />} />
             </Routes>

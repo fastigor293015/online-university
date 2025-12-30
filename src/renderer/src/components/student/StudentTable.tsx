@@ -6,8 +6,10 @@ import { StudentForm } from './StudentForm'
 import { ColumnsType } from 'antd/es/table'
 import { generateId } from '@renderer/utils/helpers'
 import { RecordActions } from '@renderer/components/shared/RecordActions'
+import { useUserStore } from '@renderer/stores/useUserStore'
 
 export const StudentTable: React.FC = () => {
+  const { isAdmin } = useUserStore()
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
@@ -157,18 +159,20 @@ export const StudentTable: React.FC = () => {
 
   return (
     <>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            setSelectedStudent(null)
-            setModalVisible(true)
-          }}
-        >
-          Добавить запись
-        </Button>
-      </div>
+      {isAdmin && (
+        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setSelectedStudent(null)
+              setModalVisible(true)
+            }}
+          >
+            Добавить запись
+          </Button>
+        </div>
+      )}
 
       <Table
         dataSource={students}

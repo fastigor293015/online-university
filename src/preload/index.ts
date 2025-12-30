@@ -6,8 +6,10 @@ import {
   BackupObject,
   Course,
   CourseCategory,
+  CourseFormat,
   DBInfo,
   Enrollment,
+  EnrollmentStatus,
   PGMetrics,
   PostgreSQLTools,
   Student,
@@ -89,29 +91,30 @@ export const electronAPI = {
 
   // Course Category API
   courseCategory: {
-    findAll: () => ipcRenderer.invoke(IpcChannels.UNIVERSITY_FIND_ALL),
-    create: (data: CourseCategory) => ipcRenderer.invoke(IpcChannels.UNIVERSITY_CREATE, data),
+    findAll: () => ipcRenderer.invoke(IpcChannels.COURSE_CATEGORY_FIND_ALL),
+    create: (data: CourseCategory) => ipcRenderer.invoke(IpcChannels.COURSE_CATEGORY_CREATE, data),
     update: (id: number, data: CourseCategory) =>
-      ipcRenderer.invoke(IpcChannels.UNIVERSITY_UPDATE, id, data),
-    delete: (id: number) => ipcRenderer.invoke(IpcChannels.UNIVERSITY_DELETE, id)
+      ipcRenderer.invoke(IpcChannels.COURSE_CATEGORY_UPDATE, id, data),
+    delete: (id: number) => ipcRenderer.invoke(IpcChannels.COURSE_CATEGORY_DELETE, id)
   },
 
   // Course Format API
   courseFormat: {
-    findAll: () => ipcRenderer.invoke(IpcChannels.UNIVERSITY_FIND_ALL),
-    create: (data: University) => ipcRenderer.invoke(IpcChannels.UNIVERSITY_CREATE, data),
-    update: (id: number, data: University) =>
-      ipcRenderer.invoke(IpcChannels.UNIVERSITY_UPDATE, id, data),
-    delete: (id: number) => ipcRenderer.invoke(IpcChannels.UNIVERSITY_DELETE, id)
+    findAll: () => ipcRenderer.invoke(IpcChannels.COURSE_FORMAT_FIND_ALL),
+    create: (data: CourseFormat) => ipcRenderer.invoke(IpcChannels.COURSE_FORMAT_CREATE, data),
+    update: (id: number, data: CourseFormat) =>
+      ipcRenderer.invoke(IpcChannels.COURSE_FORMAT_UPDATE, id, data),
+    delete: (id: number) => ipcRenderer.invoke(IpcChannels.COURSE_FORMAT_DELETE, id)
   },
 
   // Enrollment Status API
   enrollmentStatus: {
-    findAll: () => ipcRenderer.invoke(IpcChannels.UNIVERSITY_FIND_ALL),
-    create: (data: University) => ipcRenderer.invoke(IpcChannels.UNIVERSITY_CREATE, data),
-    update: (id: number, data: University) =>
-      ipcRenderer.invoke(IpcChannels.UNIVERSITY_UPDATE, id, data),
-    delete: (id: number) => ipcRenderer.invoke(IpcChannels.UNIVERSITY_DELETE, id)
+    findAll: () => ipcRenderer.invoke(IpcChannels.ENROLLMENT_STATUS_FIND_ALL),
+    create: (data: EnrollmentStatus) =>
+      ipcRenderer.invoke(IpcChannels.ENROLLMENT_STATUS_CREATE, data),
+    update: (id: number, data: EnrollmentStatus) =>
+      ipcRenderer.invoke(IpcChannels.ENROLLMENT_STATUS_UPDATE, id, data),
+    delete: (id: number) => ipcRenderer.invoke(IpcChannels.ENROLLMENT_STATUS_DELETE, id)
   },
 
   // Generic invoke
