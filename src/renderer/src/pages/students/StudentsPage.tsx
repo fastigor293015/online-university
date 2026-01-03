@@ -6,8 +6,10 @@ const { Title } = Typography
 
 export const StudentsPage: React.FC = () => {
   return (
-    <div style={{ padding: 24 }}>
-      <Title level={2}>Студенты</Title>
+    <div>
+      <Title level={2} style={{ marginTop: 0 }}>
+        Студенты
+      </Title>
       <Card>
         <StudentTable />
       </Card>

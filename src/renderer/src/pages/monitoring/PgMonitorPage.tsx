@@ -86,7 +86,7 @@ export const PgMonitorPage: React.FC = () => {
     : []
 
   return (
-    <div style={{ padding: 24 }}>
+    <div>
       <Space align="center" style={{ marginBottom: 24 }}>
         <Title level={2} style={{ margin: 0 }}>
           <DatabaseOutlined /> Мониторинг PostgreSQL

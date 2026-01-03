@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import { AuthData, AuthResponse } from '@common/types/database'
-import { User } from '../models'
+import { IUser, User } from '../models'
 
 export class UserService {
   static async register(data: AuthData): Promise<AuthResponse> {
@@ -64,13 +64,36 @@ export class UserService {
     }
 
     // Обновляем последний вход
-    // await user.update({ last_login: new Date() })
-    // user.save()
+    await User.update(
+      { last_login: new Date() },
+      {
+        where: {
+          username
+        }
+      }
+    )
 
     return {
       success: true,
       message: 'Вход выполнен успешно',
       user
     }
+  }
+
+  static async findAll(): Promise<IUser[]> {
+    return User.findAll({ raw: true })
+  }
+
+  static async update(id: number, data: IUser): Promise<[number, IUser[]]> {
+    return User.update(data, {
+      where: { user_id: id },
+      returning: true
+    })
+  }
+
+  static async delete(id: number): Promise<number> {
+    return User.destroy({
+      where: { user_id: id }
+    })
   }
 }

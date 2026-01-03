@@ -58,6 +58,18 @@ export function registerIpcHandlers(): void {
     return await UserService.login(data)
   })
 
+  ipcMain.handle(IpcChannels.USER_FIND_ALL, async () => {
+    return await UserService.findAll()
+  })
+
+  ipcMain.handle(IpcChannels.USER_UPDATE, async (_, id: number, data) => {
+    return await UserService.update(id, data)
+  })
+
+  ipcMain.handle(IpcChannels.USER_DELETE, async (_, id: number) => {
+    return await UserService.delete(id)
+  })
+
   ipcMain.handle(IpcChannels.BACKUP, async () => {
     return await BackupService.quickBackup()
   })

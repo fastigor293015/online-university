@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom'
-import { Layout, Menu } from 'antd'
+import { ConfigProvider, Layout, Menu } from 'antd'
+import ruRU from 'antd/locale/ru_RU'
 import {
   DashboardOutlined,
   BankOutlined,
@@ -11,14 +12,19 @@ import {
   UserAddOutlined,
   MonitorOutlined
 } from '@ant-design/icons'
-import { TeachersPage, DashboardPage } from './pages'
-
+import {
+  TeachersPage,
+  DashboardPage,
+  LoginPage,
+  StudentsPage,
+  PgMonitorPage,
+  CoursesPage,
+  UniversitiesPage,
+  EnrollmentsPage,
+  UsersPage
+} from './pages'
 import { useUserStore } from '@renderer/stores/useUserStore'
-import { LoginPage } from '@renderer/pages/login/LoginPage'
 import { UserMenu } from '@renderer/components/auth/UserMenu'
-import { StudentsPage } from '@renderer/pages/students/StudentsPage'
-import { PgMonitorPage } from '@renderer/pages/monitoring/PgMonitorPage'
-import { CoursesPage } from '@renderer/pages/courses/CoursesPage'
 
 const { Header, Sider, Content } = Layout
 
@@ -63,54 +69,59 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider collapsible>
-          <div
-            style={{
-              height: 32,
-              margin: 16,
-              background: 'rgba(255, 255, 255, 0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 10,
-              color: 'white',
-              fontWeight: 'bold'
-            }}
-          >
-            UNI
-          </div>
-          <Menu theme="dark" mode="inline" items={menuItems} defaultSelectedKeys={['1']} />
-        </Sider>
-        <Layout>
-          <Header
-            style={{
-              padding: 0,
-              background: '#fff',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              boxShadow: '0 1px 4px rgba(0,21,41,.08)'
-            }}
-          >
-            <div style={{ padding: '0 24px', fontSize: 18, fontWeight: 'bold' }}>
-              Online University Manager
+      <ConfigProvider locale={ruRU}>
+        <Layout style={{ minHeight: '100vh' }}>
+          <Sider collapsible>
+            <div
+              style={{
+                height: 32,
+                margin: 16,
+                background: 'rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 10,
+                color: 'white',
+                fontWeight: 'bold'
+              }}
+            >
+              UNI
             </div>
-            <UserMenu />
-          </Header>
-          <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
-            <Routes>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/universities" element={<TeachersPage />} />
-              <Route path="/teachers" element={<TeachersPage />} />
-              <Route path="/students" element={<StudentsPage />} />
-              <Route path="/courses" element={<CoursesPage />} />
-              <Route path="/enrollments" element={<TeachersPage />} />
-              <Route path="/monitoring" element={<PgMonitorPage />} />
-            </Routes>
-          </Content>
+            <Menu theme="dark" mode="inline" items={menuItems} defaultSelectedKeys={['1']} />
+          </Sider>
+          <Layout>
+            <Header
+              style={{
+                padding: 0,
+                background: '#fff',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                boxShadow: '0 1px 4px rgba(0,21,41,.08)'
+              }}
+            >
+              <div style={{ padding: '0 24px', fontSize: 18, fontWeight: 'bold' }}>
+                Online University Manager
+              </div>
+              <UserMenu />
+            </Header>
+            <Content
+              style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}
+            >
+              <Routes>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/universities" element={<UniversitiesPage />} />
+                <Route path="/teachers" element={<TeachersPage />} />
+                <Route path="/students" element={<StudentsPage />} />
+                <Route path="/courses" element={<CoursesPage />} />
+                <Route path="/enrollments" element={<EnrollmentsPage />} />
+                <Route path="/users" element={<UsersPage />} />
+                <Route path="/monitoring" element={<PgMonitorPage />} />
+              </Routes>
+            </Content>
+          </Layout>
         </Layout>
-      </Layout>
+      </ConfigProvider>
     </Router>
   )
 }

@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer'
+import dayjs from 'dayjs'
 
 // Преобразование Buffer в base64 для отображения изображений
 export const bufferToBase64 = (buffer?: Buffer): string => {
@@ -7,48 +8,16 @@ export const bufferToBase64 = (buffer?: Buffer): string => {
 }
 
 // Форматирование даты
-export const formatDate = (
-  date: Date | string,
-  format: 'short' | 'long' | 'relative' = 'short'
-): string => {
-  const d = new Date(date)
+export const formatDate = (date: string | number | Date | null | undefined): string => {
+  return dayjs(date).format('DD.MM.YYYY')
+}
 
-  switch (format) {
-    case 'short':
-      return d.toLocaleDateString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      })
-
-    case 'long':
-      return d.toLocaleDateString('ru-RU', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-
-    case 'relative':
-      const now = new Date()
-      const diff = now.getTime() - d.getTime()
-
-      const minutes = Math.floor(diff / 60000)
-      const hours = Math.floor(minutes / 60)
-      const days = Math.floor(hours / 24)
-
-      if (minutes < 1) return 'только что'
-      if (minutes < 60) return `${minutes} мин. назад`
-      if (hours < 24) return `${hours} ч. назад`
-      if (days < 7) return `${days} д. назад`
-
-      return formatDate(d, 'short')
-
-    default:
-      return d.toISOString()
-  }
+export const compareDate = (
+  firstDate: string | number | Date | null | undefined,
+  secondDate: string | number | Date | null | undefined
+): number => {
+  return dayjs(firstDate).diff(dayjs(secondDate))
+  // return dayjs(firstDate).isAfter(dayjs(secondDate))
 }
 
 // Форматирование цены

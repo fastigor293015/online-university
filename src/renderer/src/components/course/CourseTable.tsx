@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Button, Space, Modal, message } from 'antd'
+import { Button, Space, Modal, message } from 'antd'
 import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined } from '@ant-design/icons'
 import { Course, CourseCategory, CourseFormat, Teacher, University } from '@common/types/database'
 import { CourseForm } from './CourseForm'
 import { ColumnsType } from 'antd/es/table'
-import { generateId } from '@renderer/utils/helpers'
 import { useUserStore } from '@renderer/stores/useUserStore'
+import { Table } from '@renderer/components/shared'
+import { compareDate, formatDate } from '@renderer/utils/helpers'
 
 export const CourseTable: React.FC = () => {
   const { isAdmin } = useUserStore()
@@ -43,10 +44,6 @@ export const CourseTable: React.FC = () => {
   }
 
   useEffect(() => {
-    console.log(courses)
-  }, [courses])
-
-  useEffect(() => {
     loadData()
   }, [])
 
@@ -55,7 +52,8 @@ export const CourseTable: React.FC = () => {
       title: 'course_id',
       dataIndex: 'course_id',
       key: 'column_course_id',
-      sorter: (a: Course, b: Course) => a.course_id - b.course_id
+      sorter: (a: Course, b: Course) => a.course_id - b.course_id,
+      fixed: 'start'
     },
     {
       title: 'teacher_id',
@@ -76,16 +74,96 @@ export const CourseTable: React.FC = () => {
       sorter: (a: Course, b: Course) => a.title.localeCompare(b.title)
     },
     {
+      title: 'start_date',
+      dataIndex: 'start_date',
+      key: 'column_start_date',
+      render: (_, record) => formatDate(record.start_date),
+      sorter: (a: Course, b: Course) => compareDate(a.start_date, b.start_date)
+    },
+    {
+      title: 'length',
+      dataIndex: 'length',
+      key: 'column_length',
+      sorter: (a: Course, b: Course) => a.length - b.length
+    },
+    {
+      title: 'workload',
+      dataIndex: 'workload',
+      key: 'column_workload'
+    },
+    {
+      title: 'participants',
+      dataIndex: 'participants',
+      key: 'column_participants',
+      sorter: (a: Course, b: Course) => a.participants - b.participants
+    },
+    {
       title: 'description',
       dataIndex: 'description',
       key: 'column_description',
       ellipsis: true
     },
     {
+      title: 'plan',
+      dataIndex: 'plan',
+      key: 'column_plan',
+      ellipsis: true
+    },
+    {
+      title: 'requirements',
+      dataIndex: 'requirements',
+      key: 'column_requirements',
+      ellipsis: true
+    },
+    {
+      title: 'format_id',
+      dataIndex: 'format_id',
+      key: 'column_format_id'
+    },
+    {
+      title: 'recommended_readings',
+      dataIndex: 'recommended_readings',
+      key: 'column_recommended_readings',
+      ellipsis: true
+    },
+    {
+      title: 'certificate',
+      dataIndex: 'certificate',
+      key: 'column_certificate',
+      render: (_, record) => String(record.certificate)
+    },
+    {
+      title: 'price',
+      dataIndex: 'price',
+      key: 'column_price'
+    },
+    {
+      title: 'category_id',
+      dataIndex: 'category_id',
+      key: 'column_category_id'
+    },
+    {
+      title: 'exam',
+      dataIndex: 'exam',
+      key: 'column_exam',
+      render: (_, record) => String(record.exam)
+    },
+    {
+      title: 'site',
+      dataIndex: 'site',
+      key: 'column_site'
+    },
+    {
+      title: 'other',
+      dataIndex: 'other',
+      key: 'column_other',
+      ellipsis: true
+    },
+    {
       title: 'Действия',
       key: 'actions',
       width: 120,
-      render: (_: any, record: Course) => (
+      render: (_, record: Course) => (
         <Space>
           <Button icon={<EyeOutlined />} onClick={() => handleView(record)} size="small" />
           <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} size="small" />
@@ -96,20 +174,59 @@ export const CourseTable: React.FC = () => {
             size="small"
           />
         </Space>
-      )
+      ),
+      fixed: 'end'
     }
   ]
 
   const handleView = (course: Course): void => {
+    const teacher = teachers.find((item) => item.teacher_id === course.teacher_id)
+    const university = universities.find((item) => item.university_id === course.university_id)
+    const format = formats.find((item) => item.format_id === course.format_id)
+    const category = categories.find((item) => item.category_id === course.category_id)
+
     Modal.info({
       title: course.title,
       content: (
         <div>
           <p>
-            <strong>Фото:</strong> {course.title}
+            <strong>Сайт:</strong> {course?.site}
+          </p>
+          <p>
+            <strong>Формат:</strong> {format?.format_name}
+          </p>
+          <p>
+            <strong>Категория:</strong> {category?.category_name}
+          </p>
+          <p>
+            <strong>Преподаватель:</strong> {teacher?.name}
+          </p>
+          <p>
+            <strong>Университет:</strong> {university?.uni_title}
+          </p>
+          <p>
+            <strong>Начало:</strong> {formatDate(course.start_date)}
+          </p>
+          <p>
+            <strong>Нагрузка:</strong> {course.workload}
+          </p>
+          <p>
+            <strong>Кол-во участников:</strong> {course.participants}
+          </p>
+          <p>
+            <strong>Цена:</strong> {course.price}
           </p>
           <p>
             <strong>Описание:</strong> {course.description}
+          </p>
+          <p>
+            <strong>Учебный план:</strong> {course.plan}
+          </p>
+          <p>
+            <strong>Требования:</strong> {course.requirements}
+          </p>
+          <p>
+            <strong>Рекомендуемая литература:</strong> {course.recommended_readings}
           </p>
         </div>
       ),
@@ -125,7 +242,7 @@ export const CourseTable: React.FC = () => {
   const handleDelete = async (id: number): Promise<void> => {
     Modal.confirm({
       title: 'Удалить курс?',
-      content: 'Все связанные курсы также будут удалены',
+      content: 'Все связанные записи на курсы также будут удалены',
       onOk: async () => {
         try {
           await window.electronAPI.course.delete(id)
@@ -174,13 +291,7 @@ export const CourseTable: React.FC = () => {
         </div>
       )}
 
-      <Table
-        dataSource={courses}
-        columns={columns}
-        rowKey={(record) => `${record.course_id || 'temp'}_${generateId()}`}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-      />
+      <Table dataSource={courses} columns={columns} loading={loading} />
 
       <Modal
         title={selectedCourse ? 'Редактировать курс' : 'Добавить курс'}

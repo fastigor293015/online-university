@@ -4,6 +4,13 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
+    server: {
+      headers: {
+        // ⚠️ РЕШЕНИЕ для ошибки CSP с Blob URL
+        // Эта директива разрешает загрузку изображений из Blob URL
+        'Content-Security-Policy': "img-src 'self' data: blob:;"
+      }
+    },
     resolve: {
       alias: {
         '@main': resolve('src/main'),
@@ -12,6 +19,13 @@ export default defineConfig({
     }
   },
   preload: {
+    server: {
+      headers: {
+        // ⚠️ РЕШЕНИЕ для ошибки CSP с Blob URL
+        // Эта директива разрешает загрузку изображений из Blob URL
+        'Content-Security-Policy': "img-src 'self' data: blob:;"
+      }
+    },
     resolve: {
       alias: {
         '@main': resolve('src/main'),
@@ -20,6 +34,13 @@ export default defineConfig({
     }
   },
   renderer: {
+    server: {
+      headers: {
+        // ⚠️ РЕШЕНИЕ для ошибки CSP с Blob URL
+        // Эта директива разрешает загрузку изображений из Blob URL
+        'Content-Security-Policy': "img-src 'self' data: blob:;"
+      }
+    },
     resolve: {
       alias: {
         '@renderer': resolve(__dirname, './src/renderer/src'),

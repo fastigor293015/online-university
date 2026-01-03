@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Button, Space, Modal, message, Tag, Image } from 'antd'
-import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined } from '@ant-design/icons'
+import { Button, Modal, message } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 import { Teacher, University } from '@common/types/database'
 import { TeacherForm } from './TeacherForm'
 import { ColumnsType } from 'antd/es/table'
-import { generateId } from '@renderer/utils/helpers'
 import { useUserStore } from '@renderer/stores/useUserStore'
 import { RecordActions } from '@renderer/components/shared/RecordActions'
+import { Table } from '@renderer/components/shared'
 
 export const TeacherTable: React.FC = () => {
   const { isAdmin } = useUserStore()
@@ -15,8 +15,6 @@ export const TeacherTable: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null)
-  const [photoPreviewVisible, setPhotoPreviewVisible] = useState(false)
-  const [currentPhoto, setCurrentPhoto] = useState<string>('')
 
   const loadData = async (): Promise<void> => {
     setLoading(true)
@@ -47,7 +45,8 @@ export const TeacherTable: React.FC = () => {
       title: 'teacher_id',
       dataIndex: 'teacher_id',
       key: 'column_teacher_id',
-      sorter: (a: Teacher, b: Teacher) => a.teacher_id - b.teacher_id
+      sorter: (a: Teacher, b: Teacher) => a.teacher_id - b.teacher_id,
+      fixed: 'start'
     },
     {
       title: 'name',
@@ -58,7 +57,8 @@ export const TeacherTable: React.FC = () => {
     {
       title: 'photo',
       dataIndex: 'photo',
-      key: 'column_photo'
+      key: 'column_photo',
+      render: (photo: Buffer) => String(photo)
     },
     {
       title: 'info',
@@ -76,23 +76,26 @@ export const TeacherTable: React.FC = () => {
       title: 'Действия',
       key: 'actions',
       width: 120,
-      render: (_: any, record: Teacher) => (
+      render: (_, record: Teacher) => (
         <RecordActions
           onView={() => handleView(record)}
           onEdit={() => handleEdit(record)}
           onDelete={() => handleDelete(record.teacher_id)}
         />
-      )
+      ),
+      fixed: 'end'
     }
   ]
 
   const handleView = (teacher: Teacher): void => {
+    const university = universities.find((item) => item.university_id === teacher.university_id)
+
     Modal.info({
       title: teacher.name,
       content: (
         <div>
           <p>
-            <strong>Фото:</strong> {teacher.name}
+            <strong>Университет:</strong> {university?.uni_title}
           </p>
           <p>
             <strong>Описание:</strong> {teacher.info}
@@ -160,13 +163,7 @@ export const TeacherTable: React.FC = () => {
         </div>
       )}
 
-      <Table
-        dataSource={teachers}
-        columns={columns}
-        rowKey={(record) => `${record.teacher_id || 'temp'}_${generateId()}`}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-      />
+      <Table dataSource={teachers} columns={columns} loading={loading} />
 
       <Modal
         title={selectedTeacher ? 'Редактировать преподавателя' : 'Добавить преподавателя'}

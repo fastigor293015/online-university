@@ -17,7 +17,7 @@ interface UpdateEnrollmentDto extends Pick<
 
 export class EnrollmentService {
   static async findAll(): Promise<IEnrollment[]> {
-    return Enrollment.findAll({ raw: true })
+    return Enrollment.findAll({ raw: true, limit: 100000 })
   }
 
   static async findOne(studentId: number, courseId: number): Promise<IEnrollment | null> {

@@ -1,17 +1,17 @@
 import React from 'react'
 import { Card, Typography } from 'antd'
-import { TeacherTable } from '../../components'
+import { EnrollmentTable } from '../../components'
 
 const { Title } = Typography
 
-export const TeachersPage: React.FC = () => {
+export const EnrollmentsPage: React.FC = () => {
   return (
     <div>
       <Title level={2} style={{ marginTop: 0 }}>
-        Преподаватели
+        Записи на курсы
       </Title>
       <Card>
-        <TeacherTable />
+        <EnrollmentTable />
       </Card>
     </div>
   )

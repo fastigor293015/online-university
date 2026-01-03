@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Button, Modal, message, Tag, Image } from 'antd'
+import { Button, Modal, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { Student } from '@common/types/database'
 import { StudentForm } from './StudentForm'
 import { ColumnsType } from 'antd/es/table'
-import { generateId } from '@renderer/utils/helpers'
 import { RecordActions } from '@renderer/components/shared/RecordActions'
 import { useUserStore } from '@renderer/stores/useUserStore'
+import { Table } from '@renderer/components/shared'
 
 export const StudentTable: React.FC = () => {
   const { isAdmin } = useUserStore()
@@ -14,8 +14,6 @@ export const StudentTable: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-  const [photoPreviewVisible, setPhotoPreviewVisible] = useState(false)
-  const [currentPhoto, setCurrentPhoto] = useState<string>('')
 
   const loadData = async (): Promise<void> => {
     setLoading(true)
@@ -42,7 +40,8 @@ export const StudentTable: React.FC = () => {
       title: 'student_id',
       dataIndex: 'student_id',
       key: 'column_student_id',
-      sorter: (a: Student, b: Student) => a.student_id - b.student_id
+      sorter: (a: Student, b: Student) => a.student_id - b.student_id,
+      fixed: 'start'
     },
     {
       title: 'student_name',
@@ -54,7 +53,29 @@ export const StudentTable: React.FC = () => {
     {
       title: 'student_photo',
       dataIndex: 'student_photo',
-      key: 'column_student_photo'
+      key: 'column_student_photo',
+      render: (photo: Buffer) => String(photo)
+      /* photo ? (
+          <>
+            <Image
+              width={50}
+              height={50}
+              src={`data:image/jpeg;base64,${Buffer.from(photo).toString('base64')}`}
+              preview={{
+                visible: photoPreviewVisible,
+                src: `data:image/jpeg;base64,${Buffer.from(photo).toString('base64')}`,
+                onVisibleChange: (visible) => setPhotoPreviewVisible(visible)
+              }}
+              onClick={() => {
+                setCurrentPhoto(`data:image/jpeg;base64,${Buffer.from(photo).toString('base64')}`)
+                setPhotoPreviewVisible(true)
+              }}
+              style={{ cursor: 'pointer', borderRadius: '4px' }}
+            />
+          </>
+        ) : (
+          <div style={{ width: 50, height: 50, background: '#f0f0f0', borderRadius: '4px' }} />
+        ) */
     },
     {
       title: 'student_info',
@@ -67,7 +88,7 @@ export const StudentTable: React.FC = () => {
       dataIndex: 'encrypted_student_info',
       key: 'column_encrypted_student_info',
       ellipsis: true,
-      render: (_: any, record: Student) => String(record.encrypted_student_info)
+      render: (_, record: Student) => String(record.encrypted_student_info)
     },
     {
       title: 'education',
@@ -84,19 +105,20 @@ export const StudentTable: React.FC = () => {
       title: 'resume_allowed',
       dataIndex: 'resume_allowed',
       key: 'column_resume_allowed',
-      render: (_: any, record: Student) => String(record.resume_allowed)
+      render: (_, record: Student) => String(record.resume_allowed)
     },
     {
       title: 'Действия',
       key: 'actions',
       width: 120,
-      render: (_: any, record: Student) => (
+      render: (_, record: Student) => (
         <RecordActions
           onView={() => handleView(record)}
           onEdit={() => handleEdit(record)}
           onDelete={() => handleDelete(record.student_id)}
         />
-      )
+      ),
+      fixed: 'end'
     }
   ]
 
@@ -106,10 +128,13 @@ export const StudentTable: React.FC = () => {
       content: (
         <div>
           <p>
-            <strong>Фото:</strong> {student.student_name}
+            <strong>Описание:</strong> {student.student_info}
           </p>
           <p>
-            <strong>Описание:</strong> {student.student_info}
+            <strong>Образование:</strong> {student.education}
+          </p>
+          <p>
+            <strong>Место работы:</strong> {student.work}
           </p>
         </div>
       ),
@@ -174,13 +199,7 @@ export const StudentTable: React.FC = () => {
         </div>
       )}
 
-      <Table
-        dataSource={students}
-        columns={columns}
-        rowKey={(record) => `${record.student_id || 'temp'}_${generateId()}`}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-      />
+      <Table dataSource={students} columns={columns} loading={loading} />
 
       <Modal
         title={selectedStudent ? 'Редактировать студента' : 'Добавить студента'}

@@ -53,12 +53,14 @@ export const DashboardPage: React.FC = () => {
   }
 
   if (error) {
-    return <Alert message={error} type="error" />
+    return <Alert title={error} type="error" />
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      <Title level={2}>Панель управления</Title>
+    <div>
+      <Title level={2} style={{ marginTop: 0 }}>
+        Панель управления
+      </Title>
       <p style={{ color: '#666', marginBottom: 24 }}>
         Добро пожаловать в систему управления онлайн-университетом
       </p>

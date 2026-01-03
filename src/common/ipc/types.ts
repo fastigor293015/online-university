@@ -2,6 +2,9 @@ export enum IpcChannels {
   // Auth channels
   REGISTER = 'user:register',
   LOGIN = 'user:login',
+  USER_FIND_ALL = 'user:findAll',
+  USER_UPDATE = 'user:update',
+  USER_DELETE = 'user:delete',
 
   BACKUP = 'database:backup',
   CHECK_PSQL_TOOL = 'database:checkPostgreSQLTools',

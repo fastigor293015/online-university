@@ -14,7 +14,8 @@ import {
   PostgreSQLTools,
   Student,
   Teacher,
-  University
+  University,
+  User
 } from '@common/types/database'
 
 // Типизированный API для renderer процесса
@@ -23,7 +24,10 @@ export const electronAPI = {
   user: {
     register: (data: AuthData): Promise<AuthResponse> =>
       ipcRenderer.invoke(IpcChannels.REGISTER, data),
-    login: (data: AuthData): Promise<AuthResponse> => ipcRenderer.invoke(IpcChannels.LOGIN, data)
+    login: (data: AuthData): Promise<AuthResponse> => ipcRenderer.invoke(IpcChannels.LOGIN, data),
+    findAll: () => ipcRenderer.invoke(IpcChannels.USER_FIND_ALL),
+    update: (id: number, data: User) => ipcRenderer.invoke(IpcChannels.USER_UPDATE, id, data),
+    delete: (id: number) => ipcRenderer.invoke(IpcChannels.USER_DELETE, id)
   },
 
   database: {
