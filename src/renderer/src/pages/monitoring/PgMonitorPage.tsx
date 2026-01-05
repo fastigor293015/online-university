@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Row, Col, Statistic, Table, Alert, Tag, Typography, Switch, Space } from 'antd'
+import { Card, Row, Col, Statistic, Table, Alert, Tag, Typography, Space } from 'antd'
 import {
   DatabaseOutlined,
-  DashboardOutlined,
   UsergroupAddOutlined,
   HddOutlined,
   SyncOutlined
@@ -13,36 +12,28 @@ const { Title, Text } = Typography
 
 export const PgMonitorPage: React.FC = () => {
   const [metrics, setMetrics] = useState<PGMetrics | null>(null)
-  const [isMonitoring, setIsMonitoring] = useState(false)
-  const [loading, setLoading] = useState(false)
+
+  const startMonitoring = (): void => {
+    window.electronAPI.database.startPgMonitoring(5) // Интервал 5 сек
+  }
+
+  const stopMonitoring = (): void => {
+    window.electronAPI.database.stopPgMonitoring()
+  }
 
   // Подписка на обновления от главного процесса
   useEffect(() => {
-    let removeListener = (): Promise<any> => {}
-    const func = async () => {
-      removeListener = window.electronAPI.database.onPgMetricsUpdate((newMetrics: PGMetrics) => {
-        setMetrics(newMetrics)
-      })
-      return removeListener
-    }
-    func()
+    startMonitoring()
+    window.electronAPI.database.onPgMetricsUpdate((newMetrics: PGMetrics) => {
+      setMetrics(newMetrics)
+    })
+
+    return () => stopMonitoring()
   }, [])
 
-  const startMonitoring = async () => {
-    setLoading(true)
-    const result = await window.electronAPI.database.startPgMonitoring(5) // Интервал 5 сек
-    if (result.success) {
-      setIsMonitoring(true)
-    }
-    setLoading(false)
-  }
-
-  const stopMonitoring = async () => {
-    const result = await window.electronAPI.database.stopPgMonitoring()
-    if (result.success) {
-      setIsMonitoring(false)
-    }
-  }
+  useEffect(() => {
+    console.log(metrics)
+  }, [metrics])
 
   const columns = [
     { title: 'Метрика', dataIndex: 'name', key: 'name' },
@@ -79,8 +70,10 @@ export const PgMonitorPage: React.FC = () => {
         {
           key: '4',
           name: 'Эффективность кэша',
-          value: metrics.cache_hit_ratio ? `${metrics.cache_hit_ratio.toFixed(1)}%` : 'N/A',
-          status: (metrics.cache_hit_ratio || 0) < 90 ? 'warning' : 'normal'
+          value: metrics.cache_hit_ratio
+            ? `${Number(metrics.cache_hit_ratio)?.toFixed(1)}%`
+            : 'N/A',
+          status: (Number(metrics.cache_hit_ratio) || 0) < 90 ? 'warning' : 'normal'
         }
       ]
     : []
@@ -91,18 +84,11 @@ export const PgMonitorPage: React.FC = () => {
         <Title level={2} style={{ margin: 0 }}>
           <DatabaseOutlined /> Мониторинг PostgreSQL
         </Title>
-        <Switch
-          checked={isMonitoring}
-          loading={loading}
-          checkedChildren="Мониторинг активен"
-          unCheckedChildren="Мониторинг выключен"
-          onChange={(checked) => (checked ? startMonitoring() : stopMonitoring())}
-        />
       </Space>
 
       {metrics?.status === 'error' && (
         <Alert
-          message={`Ошибка получения метрик: ${metrics.error}`}
+          title={`Ошибка получения метрик: ${metrics.error}`}
           type="error"
           showIcon
           style={{ marginBottom: 16 }}

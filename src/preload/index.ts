@@ -37,10 +37,10 @@ export const electronAPI = {
     getDatabaseInfo: (): Promise<DBInfo> => ipcRenderer.invoke(IpcChannels.GET_DB_INFO),
 
     // Мониторинг сервера БД
-    startPgMonitoring: (interval: number): Promise<AuthResponse> =>
+    startPgMonitoring: (interval: number) =>
       ipcRenderer.invoke(IpcChannels.START_PG_MONITORING, interval),
-    onPgMetricsUpdate: (callback: (newMetrics: PGMetrics) => void) => () =>
-      ipcRenderer.invoke(IpcChannels.PG_METRICS_UPDATE, callback),
+    onPgMetricsUpdate: (callback: (newMetrics: PGMetrics) => void) =>
+      ipcRenderer.on(IpcChannels.PG_METRICS_UPDATE, (_, data) => callback(data)),
     stopPgMonitoring: () => ipcRenderer.invoke(IpcChannels.STOP_PG_MONITORING)
   },
 

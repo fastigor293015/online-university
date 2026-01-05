@@ -36,6 +36,7 @@ export function registerIpcHandlers(): void {
     monitor.startMonitoring(interval)
     // Подписываем окно на обновления
     monitor.on(IpcChannels.METRICS_UPDATED, (metrics) => {
+      console.log('Bridge received data')
       event.sender.send(IpcChannels.PG_METRICS_UPDATE, metrics)
     })
     return { success: true }

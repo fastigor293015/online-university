@@ -5,13 +5,28 @@ export interface PGMetrics {
   blocked_transactions?: number
   xact_commit?: number
   xact_rollback?: number
-  cache_hit_ratio?: number
+  blks_read?: number
+  blks_hit?: number
+  cache_hit_ratio?: string
   db_size?: string
   table_count?: number
   timestamp?: Date
   error?: string
 }
-
+const test = {
+  status: 'healthy',
+  active_connections: '1',
+  waiting_connections: '10',
+  blocked_transactions: '0',
+  xact_commit: '21343',
+  xact_rollback: '70',
+  blks_read: '1360886996',
+  blks_hit: '440574399',
+  cache_hit_ratio: '24.4564995940662389',
+  db_size: '1225 MB',
+  table_count: '11',
+  timestamp: '2026-01-05T04:06:52.830Z'
+}
 export interface PostgreSQLTools {
   pg_dump: boolean
   pg_restore: boolean

@@ -3,6 +3,7 @@ import { logger } from '@main/utils/logger'
 import { Pool, PoolConfig } from 'pg'
 import EventEmitter from 'events'
 import { PGMetrics } from '@common/types/database'
+import { IpcChannels } from '@common/ipc/types'
 
 export class PostgresMonitorService extends EventEmitter {
   pool: Pool
@@ -19,6 +20,7 @@ export class PostgresMonitorService extends EventEmitter {
   }
 
   async startMonitoring(intervalSec = 5) {
+    logger.info('Starting monitoring')
     this.isMonitoring = true
     this.interval = setInterval(() => this.collectMetrics(), intervalSec * 1000)
     // Сразу собираем первую метрику
@@ -26,11 +28,13 @@ export class PostgresMonitorService extends EventEmitter {
   }
 
   stopMonitoring() {
+    logger.info('Stopping monitoring')
     this.isMonitoring = false
     if (this.interval) clearInterval(this.interval)
   }
 
   async collectMetrics() {
+    logger.info('Collecting metrics')
     try {
       const client = await this.pool.connect()
       const newMetrics = {}
@@ -71,7 +75,8 @@ export class PostgresMonitorService extends EventEmitter {
       this.metrics = newMetrics
       this.metrics.timestamp = new Date()
       this.metrics.status = 'healthy'
-      this.emit('metrics-updated', this.metrics)
+      logger.log('info', 'Starting up with config %j', this.metrics)
+      this.emit(IpcChannels.METRICS_UPDATED, this.metrics)
     } catch (error) {
       logger.error('Failed to initialize database:', error)
     }
